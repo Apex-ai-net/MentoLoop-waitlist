@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional medical enhancements */
+.medical-card {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 74, 173, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 74, 173, 0.1);
+}
+
+.professional-glow {
+  box-shadow: 0 0 20px rgba(147, 233, 190, 0.2);
+}
+
+/* Subtle medical grid overlay */
+.medical-grid {
+  background-image: 
+    linear-gradient(rgba(0, 74, 173, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 74, 173, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Professional animations */
+@keyframes pulse-medical {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(0, 74, 173, 0);
+  }
+}
+
+.pulse-medical {
+  animation: pulse-medical 2s infinite;
+}
+
+/* Enhanced MentorFit title animations */
+@keyframes glow-pulse {
+  0%, 100% { 
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(52, 211, 153, 0.4), 0 0 15px rgba(16, 185, 129, 0.3);
+  }
+  50% { 
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(52, 211, 153, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.mentorfit-title {
+  background: linear-gradient(-45deg, #ffffff, #34d399, #ffffff, #10b981);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-shift 3s ease infinite, glow-pulse 2s ease-in-out infinite;
+}
+
+.mentorfit-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(5deg); }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    color: #1f2937;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary-100;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-secondary-100;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-600 hover:bg-accent-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-accent-100;
+  }
+  
+  .form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+  
+  .form-error {
+    @apply text-red-600 text-sm mt-1;
+  }
+  
+  .section-padding {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-max {
+    @apply max-w-7xl mx-auto;
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, #004aad 0%, #93e9be 100%);
+  }
+  
+  .healthcare-gradient {
+    background: linear-gradient(135deg, #004aad 0%, #93e9be 100%);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Loading animation */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Form focus animations */
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Section reveal animations */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.section-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
