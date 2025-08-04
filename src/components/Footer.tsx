@@ -1,4 +1,4 @@
-import { Heart, Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 import ProfessionalGradient from './ProfessionalGradient';
 
 interface FooterProps {
