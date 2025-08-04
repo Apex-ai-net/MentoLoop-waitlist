@@ -1,7 +1,6 @@
 import { ArrowDown, Heart, Users, Stethoscope } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import MedicalBackground from './MedicalBackground';
-import ProfessionalGradient from './ProfessionalGradient';
+import MobileOptimizedShaders from './MobileOptimizedShaders';
 
 interface HeroProps {
   onJoinWaitlist: () => void;
@@ -20,9 +19,7 @@ export default function Hero({ onJoinWaitlist }: HeroProps) {
 
   return (
     <section className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-400 overflow-hidden">
-      {/* Professional shader backgrounds */}
-      <ProfessionalGradient className="opacity-80" variant="primary" />
-      <MedicalBackground className="opacity-70" />
+      <MobileOptimizedShaders enableBackground={true} enableGradient={true}>
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 animate-bounce-gentle">
@@ -137,6 +134,7 @@ export default function Hero({ onJoinWaitlist }: HeroProps) {
           <ArrowDown className="w-6 h-6" />
         </button>
       </div>
+      </MobileOptimizedShaders>
     </section>
   );
 }

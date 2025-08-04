@@ -1,7 +1,6 @@
 import { CheckCircle, Target, Award, Shield, Clock, Users, Heart, Zap } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import FloatingElements from './FloatingElements';
-import ProfessionalGradient from './ProfessionalGradient';
+import MobileOptimizedShaders from './MobileOptimizedShaders';
 
 export default function About() {
   const [isVisible, setIsVisible] = useState(false);
@@ -75,9 +74,7 @@ export default function About() {
       ref={sectionRef}
       className="section-padding bg-gray-50 relative overflow-hidden"
     >
-      {/* Professional background effects */}
-      <ProfessionalGradient className="opacity-50" variant="subtle" />
-      <FloatingElements density="low" className="opacity-70" />
+      <MobileOptimizedShaders enableGradient={true} enableFloating={true}>
       <div className="container-max">
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {/* Header */}
@@ -198,6 +195,7 @@ export default function About() {
           </div>
         </div>
       </div>
+      </MobileOptimizedShaders>
     </section>
   );
 }

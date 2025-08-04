@@ -6,8 +6,7 @@ import { waitlistSchema, type WaitlistValidationSchema, formatName } from '../ut
 import { submitToWaitlist } from '../services/supabase';
 import { sendWelcomeEmail } from '../services/sendgrid';
 import type { FormState } from '../types';
-import ProfessionalGradient from './ProfessionalGradient';
-import FloatingElements from './FloatingElements';
+import MobileOptimizedShaders from './MobileOptimizedShaders';
 
 export default function WaitlistForm() {
   const [formState, setFormState] = useState<FormState>({ status: 'idle' });
@@ -124,8 +123,7 @@ export default function WaitlistForm() {
         className="section-padding bg-gradient-to-br from-secondary-50 to-primary-50 relative overflow-hidden"
       >
         {/* Professional background effects for success state */}
-        <ProfessionalGradient className="opacity-20" variant="secondary" />
-        <FloatingElements density="low" className="opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary-100/20 to-primary-100/20"></div>
         <div className="container-max">
           <div className="max-w-2xl mx-auto text-center">
             <div className="bg-white rounded-2xl shadow-2xl p-12 animate-fade-in">
@@ -157,9 +155,7 @@ export default function WaitlistForm() {
       ref={sectionRef}
       className="section-padding bg-gradient-to-br from-secondary-50 to-primary-50 relative overflow-hidden"
     >
-      {/* Professional background effects */}
-      <ProfessionalGradient className="opacity-40" variant="secondary" />
-      <FloatingElements density="medium" className="opacity-50" />
+      <MobileOptimizedShaders enableGradient={true} enableFloating={false}>
       <div className="container-max">
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {/* Header */}
@@ -337,6 +333,7 @@ export default function WaitlistForm() {
           </div>
         </div>
       </div>
+      </MobileOptimizedShaders>
     </section>
   );
 }

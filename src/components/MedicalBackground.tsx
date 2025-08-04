@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface MedicalBackgroundProps {
   className?: string;
@@ -7,6 +7,19 @@ interface MedicalBackgroundProps {
 export default function MedicalBackground({ className = '' }: MedicalBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detect mobile devices and reduce complexity
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,7 +50,7 @@ export default function MedicalBackground({ className = '' }: MedicalBackgroundP
     }
 
     const particles: Particle[] = [];
-    const particleCount = 15;
+    const particleCount = isMobile ? 5 : 15; // Reduce particles on mobile
     
     // Medical-themed colors matching your logo
     const colors = ['rgba(0, 74, 173, 0.1)', 'rgba(147, 233, 190, 0.1)', 'rgba(0, 74, 173, 0.05)'];
@@ -56,13 +69,22 @@ export default function MedicalBackground({ className = '' }: MedicalBackgroundP
     }
 
     // Animation loop
-    const animate = () => {
+    let lastTime = 0;
+    const animate = (currentTime: number = 0) => {
+      // Throttle animation on mobile (30fps instead of 60fps)
+      if (isMobile && currentTime - lastTime < 33) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastTime = currentTime;
+      
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
       particles.forEach((particle) => {
-        // Update position
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+        // Update position (slower on mobile)
+        const speed = isMobile ? 0.5 : 1;
+        particle.x += particle.vx * speed;
+        particle.y += particle.vy * speed;
 
         // Wrap around edges
         if (particle.x < -particle.radius) particle.x = canvas.offsetWidth + particle.radius;
@@ -70,34 +92,44 @@ export default function MedicalBackground({ className = '' }: MedicalBackgroundP
         if (particle.y < -particle.radius) particle.y = canvas.offsetHeight + particle.radius;
         if (particle.y > canvas.offsetHeight + particle.radius) particle.y = -particle.radius;
 
-        // Draw particle with medical cross pattern
+        // Draw particle with medical cross pattern (simplified on mobile)
         ctx.globalAlpha = particle.opacity;
         ctx.fillStyle = particle.color;
         
-        // Draw subtle medical cross
-        const crossSize = particle.radius * 0.3;
-        ctx.fillRect(particle.x - crossSize/2, particle.y - crossSize*2, crossSize, crossSize*4);
-        ctx.fillRect(particle.x - crossSize*2, particle.y - crossSize/2, crossSize*4, crossSize);
-        
-        // Draw circular glow
-        const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.radius
-        );
-        gradient.addColorStop(0, particle.color.replace('0.1', '0.2'));
-        gradient.addColorStop(1, 'transparent');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fill();
+        if (isMobile) {
+          // Simple circle on mobile for better performance
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Full medical cross and glow on desktop
+          const crossSize = particle.radius * 0.3;
+          ctx.fillRect(particle.x - crossSize/2, particle.y - crossSize*2, crossSize, crossSize*4);
+          ctx.fillRect(particle.x - crossSize*2, particle.y - crossSize/2, crossSize*4, crossSize);
+          
+          // Draw circular glow
+          const gradient = ctx.createRadialGradient(
+            particle.x, particle.y, 0,
+            particle.x, particle.y, particle.radius
+          );
+          gradient.addColorStop(0, particle.color.replace('0.1', '0.2'));
+          gradient.addColorStop(1, 'transparent');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       ctx.globalAlpha = 1;
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Only animate if not on a very small mobile device
+    if (!isMobile || window.innerWidth > 480) {
+      animate();
+    }
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
@@ -105,7 +137,7 @@ export default function MedicalBackground({ className = '' }: MedicalBackgroundP
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <canvas

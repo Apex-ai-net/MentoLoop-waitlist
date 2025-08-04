@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface FloatingElementsProps {
   className?: string;
@@ -11,6 +11,23 @@ export default function FloatingElements({
 }: FloatingElementsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Skip heavy animations on mobile
+  if (isMobile) {
+    return <div className={`absolute inset-0 pointer-events-none ${className}`} />;
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
