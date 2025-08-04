@@ -5,10 +5,12 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    assetsDir: 'assets'
   },
   server: {
     port: 3000,
     open: true
-  }
+  },
+  publicDir: 'public'
 })
