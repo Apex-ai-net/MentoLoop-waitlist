@@ -40,7 +40,7 @@ export default function Hero({ onJoinWaitlist }: HeroProps) {
             <img 
               src="/Logo outlined.svg" 
               alt="MentoLoop Logo" 
-              className="h-32 md:h-40 lg:h-48 w-auto filter drop-shadow-lg"
+              className="h-72 md:h-80 lg:h-96 w-auto filter drop-shadow-lg"
             />
           </div>
           

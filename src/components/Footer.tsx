@@ -27,7 +27,7 @@ export default function Footer({ onShowPrivacyPolicy, onShowTermsOfService }: Fo
               <img 
                 src="/Logo outlined.svg" 
                 alt="MentoLoop Logo" 
-                className="h-14 md:h-16 w-auto mr-4 filter drop-shadow-lg"
+                className="h-20 w-auto mr-4 filter drop-shadow-lg"
               />
             </div>
             <p className="text-gray-300 mb-6 max-w-md leading-relaxed">
