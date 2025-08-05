@@ -161,7 +161,7 @@ export default function About() {
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-secondary-400 mr-3" />
-                    <span>Personality and communication style</span>
+                    <span>and more</span>
                   </div>
                 </div>
               </div>
