@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Hero from './components/Hero';
 import About from './components/About';
 import WaitlistForm from './components/WaitlistForm';
@@ -7,13 +7,8 @@ import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
 
 function App() {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [showTermsOfService, setShowTermsOfService] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
 
   const scrollToWaitlist = () => {
     document.getElementById('waitlist')?.scrollIntoView({ 
@@ -21,17 +16,6 @@ function App() {
       block: 'start'
     });
   };
-
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
-        <div className="text-center">
-          <div className="loading-pulse bg-primary-600 w-16 h-16 rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading MentoLoop...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen">

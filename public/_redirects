@@ -1,11 +1,2 @@
-# Explicitly serve static assets with correct MIME types
-/assets/*  /assets/:splat  200
-/*.js      /:splat.js      200
-/*.css     /:splat.css     200
-/*.svg     /:splat.svg     200
-/*.png     /:splat.png     200
-/*.jpg     /:splat.jpg     200
-/*.ico     /:splat.ico     200
-
-# SPA routing - redirect all other routes to index.html
-/*         /index.html     200
+# Minimal redirects - no catch-all for testing
+/api/* /.netlify/functions/:splat 200

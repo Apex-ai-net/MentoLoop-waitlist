@@ -2,12 +2,17 @@ import type { WaitlistFormData, ApiResponse } from '../types';
 
 export const sendWelcomeEmail = async (formData: WaitlistFormData): Promise<ApiResponse> => {
   try {
-    // Determine the API endpoint based on environment
-    const API_BASE = import.meta.env.DEV 
-      ? 'http://localhost:8888/.netlify/functions' 
-      : '/.netlify/functions';
-    
-    const response = await fetch(`${API_BASE}/send-email`, {
+    // In development, skip the email and return success
+    if (import.meta.env.DEV) {
+      console.log('Development mode: Skipping email send for:', formData.email);
+      return {
+        success: true,
+        message: 'Email service disabled in development mode'
+      };
+    }
+
+    // In production, use Netlify functions
+    const response = await fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
