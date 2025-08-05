@@ -1,5 +1,6 @@
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@mentoloop.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@mentoloop.com';
 
 const getEmailTemplate = (formData) => {
   const { fullName, role } = formData;
@@ -154,6 +155,85 @@ const getEmailTemplate = (formData) => {
   };
 };
 
+const getAdminNotificationTemplate = (formData) => {
+  const { fullName, email, role, referralSource } = formData;
+  const timestamp = new Date().toLocaleString('en-US', { 
+    timeZone: 'America/New_York',
+    dateStyle: 'full',
+    timeStyle: 'short'
+  });
+  
+  const subject = `[MentoLoop] New ${role} signup: ${fullName}`;
+  
+  const content = `
+    <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1f2937;">
+      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+        <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px;">New Waitlist Signup!</h2>
+        
+        <div style="background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #374151; width: 120px;">Name:</td>
+              <td style="padding: 8px 0; color: #1f2937;">${fullName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Email:</td>
+              <td style="padding: 8px 0; color: #1f2937;"><a href="mailto:${email}" style="color: #3b82f6; text-decoration: none;">${email}</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Role:</td>
+              <td style="padding: 8px 0;">
+                <span style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 14px; text-transform: capitalize;">
+                  ${role}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Referral:</td>
+              <td style="padding: 8px 0; color: #1f2937;">${referralSource || 'Not specified'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Timestamp:</td>
+              <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">${timestamp}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="https://supabase.com/dashboard/project" 
+             style="background: #3b82f6; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+            View in Supabase Dashboard
+          </a>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 6px; font-size: 14px; color: #6b7280;">
+        <p style="margin: 0;">This is an automated notification from your MentoLoop waitlist form.</p>
+      </div>
+    </div>
+  `;
+  
+  // Create plain text version
+  const textContent = `
+New MentoLoop Waitlist Signup!
+
+Name: ${fullName}
+Email: ${email}
+Role: ${role}
+Referral Source: ${referralSource || 'Not specified'}
+Timestamp: ${timestamp}
+
+View the full details in your Supabase dashboard.
+  `.trim();
+  
+  return {
+    to: ADMIN_EMAIL,
+    subject,
+    html: content,
+    text: textContent
+  };
+};
+
 export const handler = async (event) => {
   console.log('Function called!', event.httpMethod);
   
@@ -215,45 +295,74 @@ export const handler = async (event) => {
       };
     }
 
-    const emailTemplate = getEmailTemplate(formData);
-    console.log('Email template created for:', formData.role);
-    
-    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SENDGRID_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        personalizations: [
-          {
-            to: [{ email: emailTemplate.to }],
-            subject: emailTemplate.subject,
-          }
-        ],
-        from: { email: FROM_EMAIL, name: 'MentoLoop Team' },
-        content: [
-          {
-            type: 'text/plain',
-            value: emailTemplate.text
+    // Generate both email templates
+    const welcomeTemplate = getEmailTemplate(formData);
+    const adminTemplate = getAdminNotificationTemplate(formData);
+    console.log('Email templates created for:', formData.role);
+
+    // Send both emails in parallel with graceful degradation
+    const sendEmail = async (template, emailType) => {
+      try {
+        const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SENDGRID_API_KEY}`,
+            'Content-Type': 'application/json',
           },
-          {
-            type: 'text/html',
-            value: emailTemplate.html
-          }
-        ]
-      })
-    });
+          body: JSON.stringify({
+            personalizations: [
+              {
+                to: [{ email: template.to }],
+                subject: template.subject,
+              }
+            ],
+            from: { email: FROM_EMAIL, name: 'MentoLoop Team' },
+            content: [
+              {
+                type: 'text/plain',
+                value: template.text
+              },
+              {
+                type: 'text/html',
+                value: template.html
+              }
+            ]
+          })
+        });
 
-    console.log('SendGrid response status:', response.status);
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error(`SendGrid error for ${emailType}:`, errorData);
+          throw new Error(`SendGrid API error: ${response.status}`);
+        }
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('SendGrid error:', errorData);
-      throw new Error(`SendGrid API error: ${response.status}`);
+        console.log(`${emailType} email sent successfully to:`, template.to);
+        return { success: true, type: emailType };
+      } catch (error) {
+        console.error(`Error sending ${emailType} email:`, error);
+        return { success: false, type: emailType, error: error.message };
+      }
+    };
+
+    // Send both emails in parallel
+    const [welcomeResult, adminResult] = await Promise.allSettled([
+      sendEmail(welcomeTemplate, 'welcome'),
+      sendEmail(adminTemplate, 'admin')
+    ]);
+
+    // Log results
+    console.log('Welcome email result:', welcomeResult);
+    console.log('Admin notification result:', adminResult);
+
+    // The welcome email is critical - if it fails, we should throw an error
+    if (welcomeResult.status === 'rejected') {
+      throw new Error(welcomeResult.reason?.message || 'Failed to send welcome email');
     }
 
-    console.log('Email sent successfully!');
+    // Admin email failure is logged but doesn't fail the request
+    if (adminResult.status === 'rejected') {
+      console.warn('Admin notification failed:', adminResult.reason);
+    }
     return {
       statusCode: 200,
       headers,
