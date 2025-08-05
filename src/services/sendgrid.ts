@@ -7,7 +7,7 @@ export const sendWelcomeEmail = async (formData: WaitlistFormData): Promise<ApiR
       console.log('Development mode: Skipping email send for:', formData.email);
       return {
         success: true,
-        message: 'Email service disabled in development mode'
+        data: { message: 'Email service disabled in development mode' }
       };
     }
 
