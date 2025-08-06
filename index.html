@@ -17,16 +17,78 @@
     <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLCz7Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
     <title>MentoLoop - NP Student & Preceptor Platform</title>
+    <!-- Resource error handling and loading optimization -->
+    <script>
+      // Resource loading error handler
+      window.addEventListener('error', function(e) {
+        if (e.target !== window) {
+          console.warn('Resource failed to load:', e.target.src || e.target.href);
+          // Attempt to reload critical resources once
+          if (e.target.tagName === 'SCRIPT' && !e.target.dataset.retried) {
+            e.target.dataset.retried = 'true';
+            setTimeout(() => {
+              const newScript = document.createElement('script');
+              newScript.src = e.target.src;
+              newScript.type = e.target.type;
+              newScript.crossOrigin = e.target.crossOrigin;
+              document.head.appendChild(newScript);
+            }, 1000);
+          }
+        }
+      }, true);
+      
+      // Add cache-busting timestamp for development
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        const timestamp = Date.now();
+        document.addEventListener('DOMContentLoaded', function() {
+          const links = document.querySelectorAll('link[rel="stylesheet"]');
+          const scripts = document.querySelectorAll('script[src]');
+          links.forEach(link => {
+            if (link.href.includes('/assets/')) {
+              link.href += '?t=' + timestamp;
+            }
+          });
+          scripts.forEach(script => {
+            if (script.src.includes('/assets/')) {
+              script.src += '?t=' + timestamp;
+            }
+          });
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root">
+      <!-- Fallback content for scrapers and slow connections -->
+      <noscript>
+        <div style="padding: 40px; text-align: center; font-family: 'Poppins', sans-serif;">
+          <h1 style="color: #004aad; margin-bottom: 20px;">MentoLoop - NP Student & Preceptor Platform</h1>
+          <p style="color: #666; margin-bottom: 20px;">Transforming nursing education through meaningful connections between students and experienced healthcare professionals.</p>
+          <p style="color: #666;">Please enable JavaScript to access the full MentoLoop experience.</p>
+        </div>
+      </noscript>
+      
       <!-- Loading spinner while app loads -->
-      <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #004aad 0%, #93e9be 100%); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+      <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #004aad 0%, #93e9be 100%); display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="text-align: center; color: white;">
           <div style="width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
           <p style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; margin: 0;">MentoLoop</p>
           <p style="font-family: 'Inter', sans-serif; font-size: 14px; opacity: 0.9; margin: 5px 0 0;">Loading your experience...</p>
         </div>
+      </div>
+      
+      <!-- Basic content for scrapers -->
+      <div id="scraper-content" style="display: none;">
+        <h1>MentoLoop - NP Student & Preceptor Platform</h1>
+        <p>Connecting nurse practitioner students with experienced preceptors through smart matching and mentorship-first approach.</p>
+        <h2>Key Features</h2>
+        <ul>
+          <li>Smart matching algorithm for student-preceptor pairs</li>
+          <li>Comprehensive clinical placement platform</li>
+          <li>Mentorship-focused healthcare education</li>
+          <li>Professional networking for nursing professionals</li>
+        </ul>
+        <p>Join our waitlist to transform your nursing education experience.</p>
       </div>
       <style>
         @keyframes spin {

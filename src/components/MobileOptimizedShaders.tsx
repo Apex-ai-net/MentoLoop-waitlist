@@ -23,6 +23,7 @@ export default function MobileOptimizedShaders({
 }: MobileOptimizedShadersProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isLowPerformance, setIsLowPerformance] = useState(false);
+  const [canvasError, setCanvasError] = useState(false);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -34,14 +35,38 @@ export default function MobileOptimizedShaders({
       setIsLowPerformance(lowPerf);
     };
 
+    // Test canvas support
+    const testCanvas = () => {
+      try {
+        const testCanv = document.createElement('canvas');
+        const testCtx = testCanv.getContext('2d');
+        if (!testCtx) {
+          setCanvasError(true);
+          console.warn('Canvas 2D context not supported, falling back to CSS-only mode');
+        }
+      } catch (error) {
+        setCanvasError(true);
+        console.warn('Canvas not supported, falling back to CSS-only mode:', error);
+      }
+    };
+
     checkDevice();
+    testCanvas();
     window.addEventListener('resize', checkDevice);
     return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
-  // On very low performance devices, disable all shaders
-  if (isLowPerformance && window.innerWidth < 480) {
-    return <div className={className}>{children}</div>;
+  // On very low performance devices or canvas errors, disable all shaders
+  if ((isLowPerformance && window.innerWidth < 480) || canvasError) {
+    return (
+      <div className={`${className} ${canvasError ? 'canvas-fallback' : ''}`}>
+        {/* CSS-only gradient fallback */}
+        {enableGradient && (
+          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-primary-600/5 via-primary-500/10 to-secondary-400/5" />
+        )}
+        {children}
+      </div>
+    );
   }
 
   return (
