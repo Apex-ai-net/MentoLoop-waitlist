@@ -1,3 +1,6 @@
+# Redirect www to non-www (canonical URL handling)
+https://www.mentoloop.com/* https://mentoloop.com/:splat 301!
+
 # API functions
 /api/* /.netlify/functions/:splat 200
 

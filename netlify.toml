@@ -23,11 +23,12 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# HTML files - short cache with revalidation
+# HTML files - short cache with revalidation  
 [[headers]]
   for = "*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    Vary = "Host"
     
 # Static assets with hash - long cache
 [[headers]]

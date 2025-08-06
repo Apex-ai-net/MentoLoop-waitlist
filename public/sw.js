@@ -1,6 +1,6 @@
 // MentoLoop Service Worker for Cache Management
-const CACHE_NAME = 'mentoloop-v1';
-const STATIC_CACHE_NAME = 'mentoloop-static-v1';
+const CACHE_NAME = 'mentoloop-v2';
+const STATIC_CACHE_NAME = 'mentoloop-static-v2';
 
 // Resources to cache immediately
 const STATIC_RESOURCES = [
@@ -41,6 +41,12 @@ self.addEventListener('fetch', event => {
       event.request.url.includes('supabase') || 
       event.request.url.includes('sendgrid')) {
     return;
+  }
+
+  // Handle www subdomain consistently by normalizing URLs
+  let requestUrl = event.request.url;
+  if (requestUrl.includes('www.mentoloop.com')) {
+    requestUrl = requestUrl.replace('www.mentoloop.com', 'mentoloop.com');
   }
 
   event.respondWith(
